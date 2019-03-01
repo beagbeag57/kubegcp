@@ -1,72 +1,43 @@
-#!/usr/bin/groovy
-
-podTemplate(label: 'jenkins-slave', 
-  containers: [
-    containerTemplate(
-      name: 'jnlp',
-      image: 'jenkinsci/jnlp-slave:3.10-1-alpine',
-      args: '${computer.jnlpmac} ${computer.name}'
-    ),
-    containerTemplate(
-      name: 'maven',
-      image: 'satishrawat/jenkins:8',
-      command: 'cat',
-      ttyEnabled: true
-    ),
-  ],
-  volumes: [ 
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'), 
-  ]
-)
-{
-  node ('jenkins-slave') {
-   container('maven') {
-
-     stage("Build displayName") {
-
-                script {
-                    
-                    currentBuild.description = "release.1.0 "
-                }
-            }
-    stage('Clone Repo') { 
-    git branch: 'master',
-                    
+pipeline {
+ agent {
+      label "kube-slave"
+		 }
+ parameters {
+        string (defaultValue: "10", description: 'Deployment Version', name: 'version')
+        choice choices: ['prod', 'dev', 'stag'], description: 'deploy environment', name: 'environment'
+    }
+ stages {
+        stage ('checkout code') {
+            steps {
+				container(name: 'maven', shell: '/bin/bash') {
+                git branch: 'promote',
+                    credentialsId: 'githublogin',
                     url: 'https://github.com/techmartguru/kube-poc'
-      
-     stage('Maven Package') {
-                    sh ("mvn clean package -DskipTests")
-                }
-        
+                          
+            
+        }               
     }
-    
-    stage ('Testing Stage') {
-            
-                sh 'echo "Hi This is testing"'
-                
-            
-    }
-    
-    stage ('Create Docker Image and push ') {
-            
-            sh 'cat kube-cluster-231707-6b9613e3dd78.json | docker login -u _json_key --password-stdin https://gcr.io'
-          sh 'docker build -t gcr.io/kube-cluster-231707/hello-docker:${BUILD_NUMBER} .'
-                    sh 'docker push gcr.io/kube-cluster-231707/hello-docker:${BUILD_NUMBER}'
-            
-        }
-        stage ('Connect Kubernetes Cluster ') {
-            
+	}
+    stage ('Connect Kubernetes Cluster ') {
+            steps {
+			container(name: 'maven', shell: '/bin/bash') {
             sh 'gcloud auth activate-service-account --key-file kube-cluster-231707-6b9613e3dd78.json'
-            sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project kube-cluster-231707'
-            
+		    sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project kube-cluster-231707'
+            }
                 
         }
+		}
         stage ('Deploy the App ') {
+            steps {
+			container(name: 'maven', shell: '/bin/bash') {
+            sh 'sed -i s/hello-docker:10/hello-docker:${version}/g test-app.yaml'
+            sh 'kubectl apply -f test-app.yaml -n ${environment}'
             
-            sh 'sed -i s/hello-docker:10/hello-docker:${BUILD_NUMBER}/g test-app.yaml'
-            sh 'kubectl apply -f test-app.yaml -n dev'
-            
-            } 
-}
-}
-}
+            }
+                
+        }
+    }
+ }
+} 
+    
+
