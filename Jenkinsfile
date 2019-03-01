@@ -26,11 +26,11 @@ podTemplate(label: 'jenkins-slave',
 
                 script {
                     
-                    currentBuild.description = "release.1.0 "
+                    currentBuild.description = "snapshot.1.0 "
                 }
             }
     stage('Clone Repo') { 
-    git branch: 'master',
+    git branch: 'dev',
                     
                     url: 'https://github.com/techmartguru/kube-poc'
       
