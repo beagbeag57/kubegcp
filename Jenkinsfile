@@ -21,8 +21,8 @@ pipeline {
     stage ('Connect Kubernetes Cluster ') {
             steps {
 			container(name: 'maven', shell: '/bin/bash') {
-            sh 'gcloud auth activate-service-account --key-file kube-cluster-231707-6b9613e3dd78.json'
-		    sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project kube-cluster-231707'
+            sh 'gcloud auth activate-service-account --key-file precise-armor-223618-34d2901961d4.json'
+		    sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project precise-armor-223618'
             }
                 
         }
