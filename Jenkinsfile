@@ -49,14 +49,14 @@ podTemplate(label: 'jenkins-slave',
     
     stage ('Create Docker Image and push ') {
             
-            sh 'cat precise-armor-223618-6131044f5eaf.json | docker login -u _json_key --password-stdin https://gcr.io'
+            sh 'cat precise-armor-223618-34d2901961d4.json | docker login -u _json_key --password-stdin https://gcr.io'
           sh 'docker build -t gcr.io/precise-armor-223618/hello-docker:${BUILD_NUMBER} .'
                     sh 'docker push gcr.io/precise-armor-223618/hello-docker:${BUILD_NUMBER}'
             
         }
         stage ('Connect Kubernetes Cluster ') {
             
-            sh 'gcloud auth activate-service-account --key-file precise-armor-223618-6131044f5eaf.json'
+            sh 'gcloud auth activate-service-account --key-file precise-armor-223618-34d2901961d4.json'
             sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project precise-armor-223618'
             
                 
