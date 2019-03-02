@@ -26,7 +26,7 @@ podTemplate(label: 'jenkins-slave',
 
                 script {
                     
-                    currentBuild.description = "snapshot.1.0 "
+                    currentBuild.description = "snapshot.1.0"
                 }
             }
     stage('Clone Repo') { 
@@ -49,15 +49,15 @@ podTemplate(label: 'jenkins-slave',
     
     stage ('Create Docker Image and push ') {
             
-            sh 'cat jenkins-cd-228702-af11649f60a1.json | docker login -u _json_key --password-stdin https://gcr.io'
-          sh 'docker build -t gcr.io/jenkins-cd-228702/hello-docker:${BUILD_NUMBER} .'
-                    sh 'docker push gcr.io/jenkins-cd-228702/hello-docker:${BUILD_NUMBER}'
+            sh 'cat precise-armor-223618-6131044f5eaf.json | docker login -u _json_key --password-stdin https://gcr.io'
+          sh 'docker build -t gcr.io/precise-armor-223618/hello-docker:${BUILD_NUMBER} .'
+                    sh 'docker push gcr.io/precise-armor-223618/hello-docker:${BUILD_NUMBER}'
             
         }
         stage ('Connect Kubernetes Cluster ') {
             
-            sh 'gcloud auth activate-service-account --key-file jenkins-cd-228702-af11649f60a1.json'
-            sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project jenkins-cd-228702'
+            sh 'gcloud auth activate-service-account --key-file precise-armor-223618-6131044f5eaf.json'
+            sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project precise-armor-223618'
             
                 
         }
