@@ -10,9 +10,9 @@ pipeline {
         stage ('checkout code') {
             steps {
 				container(name: 'maven', shell: '/bin/bash') {
-                git branch: 'promote',
+                git branch: 'rollback',
                     credentialsId: 'githublogin',
-                    url: 'https://github.com/satishrawat/kube-pipeline'
+                    url: 'https://github.com/techmartguru/kube-poc'
                           
             
         }               
@@ -22,7 +22,7 @@ pipeline {
             steps {
 			container(name: 'maven', shell: '/bin/bash') {
             sh 'gcloud auth activate-service-account --key-file precise-armor-223618-34d2901961d4.json'
-		    sh 'gcloud container clusters get-credentials sk-cluster --zone us-central1-a --project precise-armor-223618'
+		    sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project precise-armor-223618'
             }
                 
         }
