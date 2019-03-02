@@ -3,7 +3,7 @@ pipeline {
       label "kube-slave"
 		 }
  parameters {
-        string (defaultValue: "10", description: 'Deployment Version', name: 'version')
+        
         choice choices: ['prod', 'dev', 'stag'], description: 'deploy environment', name: 'environment'
     }
  stages {
@@ -12,7 +12,7 @@ pipeline {
 				container(name: 'maven', shell: '/bin/bash') {
                 git branch: 'promote',
                     credentialsId: 'githublogin',
-                    url: 'https://github.com/techmartguru/kube-poc'
+                    url: 'https://github.com/satishrawat/kube-pipeline'
                           
             
         }               
@@ -21,23 +21,22 @@ pipeline {
     stage ('Connect Kubernetes Cluster ') {
             steps {
 			container(name: 'maven', shell: '/bin/bash') {
-            sh 'gcloud auth activate-service-account --key-file kube-cluster-231707-6b9613e3dd78.json'
-		    sh 'gcloud container clusters get-credentials kube-poc --zone us-central1-a --project kube-cluster-231707'
+            sh 'gcloud auth activate-service-account --key-file precise-armor-223618-34d2901961d4.json'
+		    sh 'gcloud container clusters get-credentials sk-cluster --zone us-central1-a --project precise-armor-223618'
             }
                 
         }
 		}
-        stage ('Deploy the App ') {
+	
+	stage ('rollback deployment') {
             steps {
-			container(name: 'maven', shell: '/bin/bash') {
-            sh 'sed -i s/hello-docker:10/hello-docker:${version}/g test-app.yaml'
-            sh 'kubectl apply -f test-app.yaml -n ${environment}'
+				container(name: 'maven', shell: '/bin/bash') {
+				sh 'kubectl rollout history deployment/test -n ${environment}'
+				sh 'kubectl rollout undo deployment/test -n ${environment}'
+                          
             
-            }
-                
-        }
+        }               
     }
- }
-} 
-    
-
+}
+}
+}
