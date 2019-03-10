@@ -94,6 +94,7 @@ pipeline {
 						sh 'docker push gcr.io/poc-kube-234001/hello-docker:${BUILD_NUMBER}'
 						//deploy the newly created image to dev environment
 						sh 'sed -i s/hello-docker:10/hello-docker:${BUILD_NUMBER}/g test-app.yaml'
+						sh 'kubectl apply -f test-app.yaml -n dev'
 						
 					}
 				}
