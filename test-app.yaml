@@ -33,7 +33,7 @@ spec:
         app: test
     spec:
       containers:
-        - image: gcr.io/precise-armor-223618/hello-docker:10
+        - image: gcr.io/devops-218408/hello-docker:lts
           imagePullPolicy: Always
           name: test
           ports:
