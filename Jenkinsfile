@@ -67,10 +67,10 @@ pipeline {
             steps {
 			container(name: 'maven', shell: '/bin/bash') {
 			//login on gke cluster
-            sh 'gcloud auth activate-service-account --key-file /secrets/devops-218408-ae8c2c0d9901.json'
+            sh 'gcloud auth activate-service-account --key-file /secrets/account.json'
 		    sh 'gcloud container clusters get-credentials sk-cluster --zone us-central1-a --project devops-218408 '
 			//login on registry
-			sh 'cat /secrets/devops-218408-ae8c2c0d9901.json | docker login -u _json_key --password-stdin https://gcr.io'
+			sh 'cat /secrets/account.json | docker login -u _json_key --password-stdin https://gcr.io'
             }
                 
         }
