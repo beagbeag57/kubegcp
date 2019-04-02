@@ -67,10 +67,10 @@ pipeline {
             steps {
 			container(name: 'maven', shell: '/bin/bash') {
 			//login on gke cluster
-            sh 'gcloud auth activate-service-account --key-file /secrets/poc-kube-234001-9595fdb47852.json'
-		    sh 'gcloud container clusters get-credentials sk-cluster --zone us-central1-a --project poc-kube-234001'
+            sh 'gcloud auth activate-service-account --key-file /secrets/devops-218408-ae8c2c0d9901.json'
+		    sh 'gcloud container clusters get-credentials sk-cluster --zone us-central1-a --project devops-218408 '
 			//login on registry
-			sh 'cat /secrets/poc-kube-234001-9595fdb47852.json | docker login -u _json_key --password-stdin https://gcr.io'
+			sh 'cat /secrets/devops-218408-ae8c2c0d9901.json | docker login -u _json_key --password-stdin https://gcr.io'
             }
                 
         }
@@ -90,8 +90,8 @@ pipeline {
 						sh ("mvn clean package -DskipTests")
 						
 						//build and push docker image to gcr
-						sh 'docker build -t gcr.io/poc-kube-234001/hello-docker:${BUILD_NUMBER} .'
-						sh 'docker push gcr.io/poc-kube-234001/hello-docker:${BUILD_NUMBER}'
+						sh 'docker build -t gcr.io/devops-218408/hello-docker:${BUILD_NUMBER} .'
+						sh 'docker push gcr.io/devops-218408/hello-docker:${BUILD_NUMBER}'
 						//deploy the newly created image to dev environment
 						sh 'sed -i s/hello-docker:10/hello-docker:${BUILD_NUMBER}/g test-app.yaml'
 						
